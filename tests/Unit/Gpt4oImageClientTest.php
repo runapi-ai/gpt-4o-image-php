@@ -32,6 +32,7 @@ final class Gpt4oImageClientTest extends TestCase
         $task = $client->textToImage->create([
             'model' => 'gpt-4o-image',
             'prompt' => 'A product render',
+            'aspect_ratio' => '1:1',
             'callback_url' => '',
             'seed' => null,
         ]);
@@ -56,6 +57,7 @@ final class Gpt4oImageClientTest extends TestCase
         $result = $client->textToImage->run([
             'model' => 'gpt-4o-image',
             'prompt' => 'A product render',
+            'aspect_ratio' => '1:1',
         ]);
 
         self::assertInstanceOf(CompletedImageTaskResponse::class, $result);
@@ -78,6 +80,7 @@ final class Gpt4oImageClientTest extends TestCase
         $client->textToImage->run([
             'model' => 'gpt-4o-image',
             'prompt' => 'A product render',
+            'aspect_ratio' => '1:1',
         ]);
     }
 
@@ -89,9 +92,9 @@ final class Gpt4oImageClientTest extends TestCase
         $this->expectExceptionMessage('aspect_ratio must be one of the allowed values');
 
         $client->textToImage->create([
-        'model' => 'gpt-4o-image',
-        'prompt' => 'A product render',
-        'aspect_ratio' => 'not-valid',
+            'model' => 'gpt-4o-image',
+            'prompt' => 'A product render',
+            'aspect_ratio' => 'not-valid',
         ]);
     }
 
@@ -105,6 +108,7 @@ final class Gpt4oImageClientTest extends TestCase
         $client->textToImage->create([
             'model' => 'gpt-4o-image',
             'prompt' => 'A product render',
+            'aspect_ratio' => '1:1',
         ]);
 
         self::assertSame('/api/v1/gpt_4o_image/text_to_image', $transport->requests[0]->getUri()->getPath());
