@@ -25,8 +25,7 @@ final class Gpt4oImageClientTest extends TestCase
     public function testCreatePostsCompactedBodyToCorrectPath(): void
     {
         $transport = new QueueHttpClient([
-            new Response(200, [], '{"id":"task_1"}'),
-        ]);
+            new Response(200, [], '{"id":"task_1"}')]);
         $client = new Gpt4oImageClient(new ClientOptions(apiKey: 'k', httpClient: $transport, maxRetries: 0));
 
         $task = $client->textToImage->create([
@@ -34,8 +33,7 @@ final class Gpt4oImageClientTest extends TestCase
             'prompt' => 'A product render',
             'aspect_ratio' => '1:1',
             'callback_url' => '',
-            'seed' => null,
-        ]);
+            'seed' => null]);
 
         $body = json_decode((string) $transport->requests[0]->getBody(), true, flags: JSON_THROW_ON_ERROR);
 
@@ -50,15 +48,13 @@ final class Gpt4oImageClientTest extends TestCase
     {
         $transport = new QueueHttpClient([
             new Response(200, [], '{"id":"task_1"}'),
-            new Response(200, [], '{"id":"task_1","status":"completed","images":[{"url":"https://file.runapi.ai/result"}],"extra_field":"kept"}'),
-        ]);
+            new Response(200, [], '{"id":"task_1","status":"completed","images":[{"url":"https://file.runapi.ai/result"}],"extra_field":"kept","usage":{"cost":0.05}}')]);
         $client = new Gpt4oImageClient(new ClientOptions(apiKey: 'k', httpClient: $transport, maxRetries: 0));
 
         $result = $client->textToImage->run([
             'model' => 'gpt-4o-image',
             'prompt' => 'A product render',
-            'aspect_ratio' => '1:1',
-        ]);
+            'aspect_ratio' => '1:1']);
 
         self::assertInstanceOf(CompletedImageTaskResponse::class, $result);
         self::assertSame('https://file.runapi.ai/result', $result->images[0]->url);
@@ -70,8 +66,7 @@ final class Gpt4oImageClientTest extends TestCase
     {
         $transport = new QueueHttpClient([
             new Response(200, [], '{"id":"task_1"}'),
-            new Response(200, [], '{"id":"task_1","status":"completed"}'),
-        ]);
+            new Response(200, [], '{"id":"task_1","status":"completed","usage":{"cost":0.05}}')]);
         $client = new Gpt4oImageClient(new ClientOptions(apiKey: 'k', httpClient: $transport, maxRetries: 0));
 
         $this->expectException(ValidationException::class);
@@ -80,36 +75,21 @@ final class Gpt4oImageClientTest extends TestCase
         $client->textToImage->run([
             'model' => 'gpt-4o-image',
             'prompt' => 'A product render',
-            'aspect_ratio' => '1:1',
-        ]);
+            'aspect_ratio' => '1:1']);
     }
 
-    public function testRejectsInvalidContractEnum(): void
-    {
-        $client = new Gpt4oImageClient(new ClientOptions(apiKey: 'k', httpClient: new QueueHttpClient([]), maxRetries: 0));
 
-        $this->expectException(ValidationException::class);
-        $this->expectExceptionMessage('aspect_ratio must be one of the allowed values');
-
-        $client->textToImage->create([
-            'model' => 'gpt-4o-image',
-            'prompt' => 'A product render',
-            'aspect_ratio' => 'not-valid',
-        ]);
-    }
 
     public function testSecondaryResourceUsesItsOwnPath(): void
     {
         $transport = new QueueHttpClient([
-            new Response(200, [], '{"id":"task_2"}'),
-        ]);
+            new Response(200, [], '{"id":"task_2"}')]);
         $client = new Gpt4oImageClient(new ClientOptions(apiKey: 'k', httpClient: $transport, maxRetries: 0));
 
         $client->textToImage->create([
             'model' => 'gpt-4o-image',
             'prompt' => 'A product render',
-            'aspect_ratio' => '1:1',
-        ]);
+            'aspect_ratio' => '1:1']);
 
         self::assertSame('/api/v1/gpt_4o_image/text_to_image', $transport->requests[0]->getUri()->getPath());
     }

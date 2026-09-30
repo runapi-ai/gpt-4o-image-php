@@ -10,7 +10,6 @@ use RunApi\Core\RequestOptions;
 use RunApi\Core\Resources\TypedConfiguredResource;
 use RunApi\Gpt4oImage\Models\CompletedImageTaskResponse;
 use RunApi\Gpt4oImage\Models\ImageTaskResponse;
-use RunApi\Gpt4oImage\Types;
 
 /**
  * Generates images from a text prompt, optionally guided by source images and a mask. For pure generation, provide `prompt`. For editing, provide `source_image_urls` and optionally `mask_url`. At least one of `prompt` or `source_image_urls` must be set.
@@ -71,10 +70,8 @@ readonly class TextToImage extends TypedConfiguredResource
         return new self(
             $http,
             '/api/v1/gpt_4o_image/text_to_image',
-            'gpt-4o-image/text-to-image',
             ImageTaskResponse::class,
             CompletedImageTaskResponse::class,
-            Types::TEXT_TO_IMAGE_MODELS,
             'text-to-image',
             ImageTaskResponse::class,
             CompletedImageTaskResponse::class,
